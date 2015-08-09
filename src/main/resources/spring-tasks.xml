@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+	<bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+          <property name="triggers">
+              <list>
+                  <ref bean="driveInfoTrigger"/>
+                  <ref bean="userCarInfoTrigger"/>
+                  <ref bean="baseCarModelTrigger"/>
+                  <ref bean="lastExecuteAnalyzeTaskTrigger"/>
+                  <ref bean="carModelMaintainsTaskTrigger"/>
+                  <ref bean="registUserInfoTaskTrigger"/>
+              </list>
+          </property>
+          <property name="quartzProperties">
+          	<props>
+          		<prop key="org.quartz.scheduler.jmx.export">false</prop>
+          		<prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+          	</props>
+          </property>
+    </bean>
+    
+    <!-- drive_info task -->
+    <bean id="driveInfoTask" class="com.mapbar.schedule.task.DriveInfoTask">
+    	<property name="id" value="drive_info"></property>
+    </bean>
+    <bean id="driveTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="driveInfoTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="driveInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="driveTaskDetail"/>
+	    <property name="cronExpression" value="0 0 2 * * ?"/><!-- 每天凌晨亮点 -->
+	</bean>
+	
+    <!-- user_car_info task -->
+    <bean id="userCarInfoTask" class="com.mapbar.schedule.task.UserCarInfoTask">
+    	<property name="id" value="user_car_info"></property>
+    </bean>
+    <bean id="userCarInfoTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="userCarInfoTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="userCarInfoTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="userCarInfoTaskDetail"/>
+	    <property name="cronExpression" value="0 30 2 * * ?"/><!-- 每天凌晨2:30-->
+	</bean>
+	
+	<!-- base_carmodel task -->
+    <bean id="baseCarModelTask" class="com.mapbar.schedule.task.CarModelTask">
+    	<property name="id" value="base_carmodel"></property>
+    </bean>
+    <bean id="baseCarModelTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="baseCarModelTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="baseCarModelTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="baseCarModelTaskDetail"/>
+	    <property name="cronExpression" value="0 10 1 * * ?"/><!-- 每天凌晨亮点 -->
+	</bean>
+	
+	<!-- carmodel_maintenance task -->
+    <bean id="carModelMaintainsTask" class="com.mapbar.schedule.task.CarModelMaintainTask">
+    	<property name="taskId" value="carModelMaintainsTask"></property>
+    </bean>
+    <bean id="carModelMaintainsTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="carModelMaintainsTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="carModelMaintainsTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="carModelMaintainsTaskDetail"/>
+	    <property name="cronExpression" value="0 10 2 * * ?"/><!-- 每天凌晨2:10 -->
+	</bean>
+	
+	<!-- regist user task -->
+	<bean id="registUserInfoTask" class="com.mapbar.schedule.task.RegistUserTask">
+		<property name="taskId" value="registUserInfoTask"></property>
+	</bean>
+	<bean id="registUserInfoTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="registUserInfoTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="registUserInfoTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="registUserInfoTaskDetail"/>
+	    <property name="cronExpression" value="0 30 2 * * ?"/><!-- 每天凌晨2:30 -->
+	</bean>
+	
+	
+	<!-- last execute task - 4 analyze -->
+    <bean id="lastExecuteAnalyzeTask" class="com.mapbar.schedule.task.AnalyzeTaskExecLast">
+    	<property name="taskId" value="last_execute_analyze"></property>
+    	<property name="jobDao" ref="jobEXHistoryDao"></property>
+    </bean>
+    <bean id="lastExecuteAnalyzeTaskDetail" class="com.mapbar.schedule.quartz.mbean.StdMethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject" ref="lastExecuteAnalyzeTask"/>
+	    <property name="targetMethod" value="execute"/>
+	    <property name="concurrent" value="false"/>
+	</bean>
+	<bean id="lastExecuteAnalyzeTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+	    <property name="jobDetail" ref="lastExecuteAnalyzeTaskDetail"/>
+	    <property name="cronExpression" value="0 10 3 * * ?"/><!-- 每天凌晨3:10 -->
+	</bean>
+	
+	<bean id="myJmxBeanRegister" class="com.mapbar.schedule.quartz.mbean.MyJmxBeanRegister">
+		<property name="stdScheduler" ref="startQuertz"></property>
+	</bean>
+</beans>
