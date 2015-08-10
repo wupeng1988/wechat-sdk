@@ -12,14 +12,6 @@ import java.util.Map;
 public class SubscribeEventHandler implements MessageTypeHandler{
 
 	@Override
-	public boolean support(Map<String, String> xmlMap) {
-		if("event".equals(xmlMap.get(MESSAGE_TYPE)) && "subscribe".equals(xmlMap.get(EVENT)))
-			return true;
-		
-		return false;
-	}
-
-	@Override
 	public String handle(String xml, Map<String, String> xmlMap) throws Exception {
 		
 		return null;

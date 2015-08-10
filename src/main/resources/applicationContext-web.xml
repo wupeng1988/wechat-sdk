@@ -17,10 +17,6 @@
     	</mvc:message-converters>
     </mvc:annotation-driven>
     <mvc:default-servlet-handler/>
-	<context:component-scan base-package="org.dptech">
-		<context:include-filter type="regex" expression=".wx.sdk.controller.*"/>
-		<context:include-filter type="regex" expression=".wap.train.controller.*"/>
-	</context:component-scan>
 	
 	<bean id="mappingJacksonHttpMessageConverter" class="org.dptech.wap.train.converter.CustomMappingJackson2HttpMessageConverter">  
 	    <property name="supportedMediaTypes">  

@@ -1,14 +1,18 @@
 package org.dptech.wx.sdk.message;
 
+import java.util.List;
 import java.util.Map;
 
+import org.dptech.wx.sdk.cfg.AutoReplyMessageConfig;
+import org.dptech.wx.sdk.common.WechatPushedEvent;
+import org.dptech.wx.sdk.model.config.AutoReplyMessage;
+import org.dptech.wx.sdk.model.push.EventModelMap;
+import org.dptech.wx.sdk.util.BeanUtil;
+import org.dptech.wx.sdk.util.WxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.dptech.wx.sdk.cfg.AutoReplyMessageConfig;
-import org.dptech.wx.sdk.cfg.InstanceFactory;
-import org.dptech.wx.sdk.model.config.AutoReplyMessage;
-import org.dptech.wx.sdk.util.WxUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 /**
  * 
  * 推送事件总调度
@@ -16,70 +20,54 @@ import org.dptech.wx.sdk.util.WxUtil;
  * @author wupeng
  *
  */
+@Component
 public class EventMessageDispatcher implements MessageTypeHandler{
 
 	private static final Logger logger = LoggerFactory.getLogger(EventMessageDispatcher.class);
 	
-	@Override
-	public boolean support(Map<String, String> xmlMap) {
-		if("event".equals(xmlMap.get(MESSAGE_TYPE)))
-			return true;
-		
-		return false;
-	}
-
+	@Autowired
+	private EventModelMap eventModelMap;
+	
+	@Autowired
+	private List<EventMessageHandler> messageHandlers;
+	
 	@Override
 	public String handle(String xml, Map<String, String> xmlMap) throws Exception {
 		String msgType = xmlMap.get("MsgType");
 		String event = xmlMap.get("Event");
 		
-		AutoReplyMessage message = AutoReplyMessageConfig.getReplyMessage(msgType, event);
-		if(message == null){
-			logger.error(new StringBuffer("user send message [ ").append(xml).append(" ]\n, but no auto reply message configed !").toString());
-			return "";
+		WechatPushedEvent pushedEvent = BeanUtil.mapToBean(xmlMap, eventModelMap.get(event));
+		
+		EventMessageHandler handler = null;
+		for(EventMessageHandler handlerTemp : messageHandlers) {//handler优先
+			if(handlerTemp.support(pushedEvent)) {
+				handler = handlerTemp;
+				break;
+			}
 		}
 		
 		String response = "";
-		switch(message.getHandlerType()){
-		case AutoReplyMessageConfig.MESSAGE_RESPONSE_TYPE_TEXT : {
-			response = message.getValue();
-			WxUtil.replaceVariables(response, xmlMap);
-			break;
-		}
-		case AutoReplyMessageConfig.MESSAGE_RESPONSE_TYPE_CLASS : {
-			MessageTypeHandler handler = this.getHandlerByClass(message.getValue()); 
-			if(handler != null && handler.support(xmlMap)){
-				response = handler.handle(xml, xmlMap);
+		if(handler != null) {//如果有handler， 则执行handler，不执行自动回复
+			response = handler.handle(pushedEvent);
+			response = WxUtil.replaceVariables(response, xmlMap);
+		} else {//如果没有handler, 则执行自动回复
+			AutoReplyMessage message = AutoReplyMessageConfig.getReplyMessage(msgType, event);
+			if(message == null){
+				logger.error(new StringBuffer("user send message [ ").append(xml).append(" ]\n, but no auto reply message configed !").toString());
+			} else {
+				response = WxUtil.replaceVariables(message.getValue(), xmlMap);
 			}
-			break;
-		}
-		case AutoReplyMessageConfig.MESSAGE_RESPONSE_TYPE_BEAN : { 
-			MessageTypeHandler handler = InstanceFactory.getInstanceFromSpring(message.getValue(), MessageTypeHandler.class);
-			if(handler != null && handler.support(xmlMap)){
-				response = handler.handle(xml, xmlMap);
+			
+			if("".equals(response)){
+				logger.error(new StringBuffer("no response returned for ").
+						append(message.getHandlerType()).append(message.getValue()).toString());
 			}
-			break;
-		}
 		}
 		
-		if("".equals(response)){
-			logger.error(new StringBuffer("no response returned for ").
-					append(message.getHandlerType()).append(message.getValue()).toString());
-		}
 		
 		return response;
 	}
 	
-	private MessageTypeHandler getHandlerByClass(String className){
-		try {
-			return (MessageTypeHandler) InstanceFactory.getInstanceByClass(Class.forName(className));
-		} catch (ClassNotFoundException e) {
-			logger.error(e.getMessage(), e);
-		}
-		
-		return null;
-	}
-
 	@Override
 	public String messageType() {
 		return TYPE_EVENT;

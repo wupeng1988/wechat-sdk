@@ -26,8 +26,6 @@ public interface MessageTypeHandler {
 	 */
 	String TYPE_EVENT = "event";
 	
-	public boolean support(Map<String, String> xmlMap);
-	
 	public String messageType();
 	
 	public String handle(String xml, Map<String, String> xmlMap) throws Exception;

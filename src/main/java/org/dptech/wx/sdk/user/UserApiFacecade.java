@@ -24,7 +24,7 @@ public class UserApiFacecade {
 		return inst;
 	}
 	
-	public UserInfo getUserInfo(JedisCommands jedis, String openId){
+	public UserInfo getUserInfo(JedisCommands jedis, final String openId){
 		UserInfo userInfo = null;
 		try {
 			userInfo = ApiRetryUtil.doWithToken(new AccessTokenCallback<UserInfo>() {

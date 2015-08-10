@@ -1,25 +1,24 @@
 package org.dptech.wx.sdk.controller;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import org.dptech.wx.sdk.WeChatConfig;
 import org.dptech.wx.sdk.cfg.MessageTypeHandlerConfig;
 import org.dptech.wx.sdk.encrypt.CommonEncryptUtil;
 import org.dptech.wx.sdk.message.MessageTypeHandler;
 import org.dptech.wx.sdk.util.XmlUtil2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/dptech/wechat/12306")
@@ -27,8 +26,11 @@ public class ObdWechatController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ObdWechatController.class);
 	
+	@Autowired
+	private MessageTypeHandlerConfig messageTypeHandlerConfig;
+	
 	/**
-	 * 互动
+	 * 交互
 	 * 
 	 * @param request
 	 * @param response
@@ -39,7 +41,6 @@ public class ObdWechatController {
 	public @ResponseBody String callback(HttpServletRequest request, HttpServletResponse response, 
 			@RequestBody(required=true) String xml){
 		response.setCharacterEncoding("utf-8");
-//		response.setHeader("Access-Control-Allow-Origin","*");
 		
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = request.getParameterMap();
@@ -53,16 +54,7 @@ public class ObdWechatController {
 		
 		Map<String, String> xmlMap = XmlUtil2.toMap(xml);
 		String msg = "";
-		List<MessageTypeHandler> handlers = 
-				MessageTypeHandlerConfig.getHandlers(xmlMap.get(MessageTypeHandler.MESSAGE_TYPE));
-		
-		MessageTypeHandler handler = null;
-		for(MessageTypeHandler h : handlers){
-			if(h.support(xmlMap)){
-				handler = h;
-				break;
-			}
-		}
+		MessageTypeHandler handler = this.messageTypeHandlerConfig.getHandler(xmlMap.get(MessageTypeHandler.MESSAGE_TYPE));
 		
 		if(handler != null){
 			try {

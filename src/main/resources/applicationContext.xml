@@ -19,12 +19,13 @@
 
     <mvc:annotation-driven />
     
-    <context:component-scan base-package="org.dptech">
+    <!-- <context:component-scan base-package="org.dptech">
 		<context:include-filter type="regex" expression=".wap.train.service.*"/>
 		<context:include-filter type="regex" expression=".wap.train.cache.*"/>
 		<context:include-filter type="regex" expression=".wap.train.persist.*"/>
 		<context:include-filter type="regex" expression=".wap.train.spider.*"/>
-	</context:component-scan>
+	</context:component-scan> -->
+	<context:component-scan base-package="org.dptech"></context:component-scan>
 	
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     	<property name="order" value="1" />

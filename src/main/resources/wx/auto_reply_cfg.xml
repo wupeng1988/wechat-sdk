@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <auto-reply-messages>
 	<message-group type="text">
-		<message keyword="default" handler_type="text">
+		<message keyword="default">
 			您好，你发送的指令无法识别!
 		</message>
-		<message keyword="北京到南京" handler_type="class" value="com.dptec.123..."></message>
 		<message keyword="123">
 			sadsdgergwet
 		</message>
@@ -12,7 +11,7 @@
 	
 	<message-group type="event">
 		<!-- 关注，或者未关注时扫描了二维码 -->
-		<message keyword="subscribe" handler_type="text">
+		<message keyword="subscribe">
 			您好，欢迎关注本公众号
 		</message>
 		<!-- 取消关注 -->

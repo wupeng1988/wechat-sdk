@@ -25,11 +25,6 @@ import org.dptech.wx.sdk.model.config.AutoReplyMessage;
  *
  */
 public class AutoReplyMessageConfig {
-	
-	public static final String MESSAGE_RESPONSE_TYPE_TEXT = "text";
-	public static final String MESSAGE_RESPONSE_TYPE_CLASS = "class";
-	public static final String MESSAGE_RESPONSE_TYPE_BEAN = "bean";
-	
 	private static final Logger logger = LoggerFactory.getLogger(AutoReplyMessageConfig.class);
 	
 	// msg_type -> (keyword -> object)
@@ -76,19 +71,9 @@ public class AutoReplyMessageConfig {
 			List<Element> messages = group.elements("message");
 			for(Element message : messages){
 				String keyWord = message.attributeValue("keyword");
-				String handlerType = message.attributeValue("handler_type");
-				if(handlerType == null || "".equals(handlerType)){
-					handlerType = MESSAGE_RESPONSE_TYPE_TEXT;
-				}
 				
 				AutoReplyMessage t = new AutoReplyMessage();
-				if(MESSAGE_RESPONSE_TYPE_TEXT.equals(handlerType)){
-					t.setValue(message.getTextTrim());
-				} else {
-					t.setValue(message.attributeValue("value"));
-				}
-				
-				t.setHandlerType(handlerType);
+				t.setValue(message.getTextTrim());
 				t.setKeyWord(keyWord);
 				t.setMessageType(msgType);
 				messageMap.put(keyWord, t);
