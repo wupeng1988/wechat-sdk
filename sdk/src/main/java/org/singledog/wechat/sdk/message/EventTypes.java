@@ -25,13 +25,13 @@ public enum EventTypes {
 
     VIEW(ViewEvent.class);
 
-    private Class<?> mappingClass;
+    private Class<? extends AbstractEventMessage> mappingClass;
 
-    private EventTypes(Class<?> mappingClass) {
+    private EventTypes(Class<? extends AbstractEventMessage> mappingClass) {
         this.mappingClass = mappingClass;
     }
 
-    public Class<?> getMappingClass() {
+    public Class<? extends AbstractEventMessage> getMappingClass() {
         return mappingClass;
     }
 

@@ -52,23 +52,16 @@ public class AccessTokenComponent {
         StringBuilder sb = new StringBuilder(Interfaces.get_token.toString());
         sb.append("?").append("grant_type=client_credential&appid=").append(appid).append("&secret=").append(secret);
 
-        try {
-            String json = restTemplate.getForObject(sb.toString(), String.class);//HttpUtil.get(url, param);
-            Map<String, Object> map = JsonUtil.toMap(json);
-            if(map.containsKey("errcode")){
-                throw new RuntimeException("server response message : " + json);
-            } else {
-                token = new AccessToken();
-                token.setAccess_token((String) map.get("access_token"));
-                token.setExpires_in((int) map.get("expires_in"));
-                valueOperations.set(key, token, 7100, TimeUnit.SECONDS);
-                return token;
-            }
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
+        String json = restTemplate.getForObject(sb.toString(), String.class);//HttpUtil.get(url, param);
+        Map<String, Object> map = JsonUtil.toMap(json);
+        if(map.containsKey("errcode")){
+            throw new RuntimeException("server response message : " + json);
+        } else {
+            token = new AccessToken();
+            token.setAccess_token((String) map.get("access_token"));
+            token.setExpires_in((int) map.get("expires_in"));
+            valueOperations.set(key, token, 7100, TimeUnit.SECONDS);
+            return token;
         }
-
-        return null;
     }
 }

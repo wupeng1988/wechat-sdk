@@ -1,6 +1,5 @@
 package org.singledog.wechat.sdk.message;
 
-import sun.plugin2.message.EventMessage;
 
 /**
  * @see http://mp.weixin.qq.com/wiki/17/f298879f8fb29ab98b2f2971d42552fd.html
@@ -46,16 +45,16 @@ public enum MessageTypes {
     link(LinkMessage.class),
 
 
-    event(EventMessage.class);
+    event(AbstractEventMessage.class);
 
 
-    private Class<?> mappingClass;
+    private Class<? extends AbstractMessage> mappingClass;
 
-    private MessageTypes(Class<?> mappingClass) {
+    private MessageTypes(Class<? extends AbstractMessage> mappingClass) {
         this.mappingClass = mappingClass;
     }
 
-    public Class<?> getMappingClass() {
+    public Class<? extends AbstractMessage> getMappingClass() {
         return mappingClass;
     }
 

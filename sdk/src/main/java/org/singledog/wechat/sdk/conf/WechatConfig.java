@@ -14,11 +14,11 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class WechatConfig {
 
-    @Value("${org.singledog.wechat.token}")
+    @Value("${wechat.sdk.token}")
     private String token;
-    @Value("${org.singledog.wechat.appId}")
+    @Value("${wechat.sdk.appId}")
     private String appId;
-    @Value("${org.singledog.wechat.appSecret}")
+    @Value("${wechat.sdk.appSecret}")
     private String appSecret;
 
     @Bean

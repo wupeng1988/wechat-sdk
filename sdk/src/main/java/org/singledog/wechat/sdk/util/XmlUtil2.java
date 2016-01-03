@@ -18,8 +18,8 @@ public class XmlUtil2 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(XmlUtil2.class);
 	private static SAXReader reader = new SAXReader();
-	private static final Lock lock = new ReentrantLock();
-	
+    private static final Lock lock = new ReentrantLock();
+
 	public static synchronized Map<String, String> toMap(String xml){
 		Map<String, String> map = new HashMap<>();
 		Document doc = null; 
@@ -40,5 +40,18 @@ public class XmlUtil2 {
 		}
 		
 		return map;
+	}
+
+	public static String beanToXml(Object bean) {
+        StringBuilder sb = new StringBuilder("<xml>");
+        BeanUtil.navigateFields(bean, new BeanUtil.FieldNavigator() {
+            @Override
+            public void onField(String fieldName, Object value) {
+                sb.append("<").append(fieldName).append("><![CDATA[").append(value).append("]]</").append(fieldName).append(">");
+            }
+        });
+
+        sb.append("</xml>");
+        return sb.toString();
 	}
 }

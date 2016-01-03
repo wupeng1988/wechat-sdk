@@ -22,10 +22,10 @@ import java.io.Serializable;
 @Configuration
 public class CacheConfig {
 
-    @Value("${org.singledog.wechat.cache.prefix:singledog}")
+    @Value("${wechat.sdk.cache.prefix:singledog}")
     private String cachePrefix;
 
-    @Value("${org.singledog.wechat.cache.defaultExpiration:0}")
+    @Value("${wechat.sdk.cache.defaultExpiration:0}")
     private long defaultExpiration;
 
     @Autowired

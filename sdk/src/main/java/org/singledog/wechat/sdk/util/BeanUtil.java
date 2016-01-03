@@ -11,6 +11,10 @@ import org.springframework.beans.FatalBeanException;
 import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,7 +23,7 @@ public class BeanUtil {
 	private static final Logger logger = LoggerFactory.getLogger(BeanUtil.class);
 	
 	private static Map<String, PropertyDescriptor[]> class_infos = new ConcurrentHashMap<>();
-	
+
 	public static <T> T mapToBeanByJson(Map<String, ? extends Object> map, Class<T> clazz){
 		try {
 			return JsonUtil.fromJson(JsonUtil.toJson(map), clazz);
@@ -27,24 +31,58 @@ public class BeanUtil {
 			throw new BeanInstantiationException(clazz, "json convert failed ! ");
 		}
 	}
-	
-	
-	public static PropertyDescriptor[] getClassPropertyDescriptors(Class<?> clazz){
+
+    public static void navigateFields(Object bean, FieldNavigator navigator) {
+        PropertyDescriptor[] propertyDescriptors = getClassPropertyDescriptors(bean.getClass(), true);
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            String name = propertyDescriptor.getName();
+            Object value = null;
+            try {
+                Method method = propertyDescriptor.getReadMethod();
+                if (method != null) {
+                    method.setAccessible(true);
+                    value = method.invoke(bean, null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                try {
+                    value = Ognl.getValue(name, bean);
+                } catch (OgnlException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            navigator.onField(name, value);
+        }
+    }
+
+	public static PropertyDescriptor[] getClassPropertyDescriptors(Class<?> clazz, boolean cascade){
 		String className = clazz.getName();
 		if(class_infos.containsKey(className)){
 			return class_infos.get(className);
 		}
-		
+
 		PropertyDescriptor[] properties = BeanUtils.getPropertyDescriptors(clazz);
-		class_infos.put(className, properties);
+        List<PropertyDescriptor> propertyDescriptorList = Arrays.asList(properties);
+
+        if (cascade) {
+            Class superClazz = clazz.getSuperclass();
+            if (superClazz != null && !superClazz.isInterface()) {
+                properties = getClassPropertyDescriptors(superClazz, cascade);
+                propertyDescriptorList.addAll(Arrays.asList(properties));
+            }
+        }
+
+        properties = propertyDescriptorList.toArray(new PropertyDescriptor[0]);
+        class_infos.put(className, properties);
 		return properties;
 	}
-	
+
 	public static <T> T mapToBean(Map<String, ? extends Object> map, Class<T> clazz){
 		String className = clazz.getName();
 		try {
 			T instance = clazz.newInstance();
-			PropertyDescriptor[] props = getClassPropertyDescriptors(clazz);
+			PropertyDescriptor[] props = getClassPropertyDescriptors(clazz, true);
 			for(PropertyDescriptor prop : props){
 				String name = prop.getName();
 				if("class".equals(name))
@@ -73,9 +111,21 @@ public class BeanUtil {
 			throw new BeanInstantiationException(clazz, " can not access to class [ " + className + " ] !");
 		}
 	}
+
+    public static Map<String, Object> beanToMap(Object bean) {
+        Map<String, Object> map = new HashMap<>();
+        navigateFields(bean, new FieldNavigator() {
+            @Override
+            public void onField(String fieldName, Object value) {
+                map.put(fieldName, value);
+            }
+        });
+
+        return map;
+    }
 	
 	public static <T> void copyAttrs4Update(T dest, T source){
-		PropertyDescriptor[] props = getClassPropertyDescriptors(dest.getClass());
+		PropertyDescriptor[] props = getClassPropertyDescriptors(dest.getClass(), true);
 		for(PropertyDescriptor prop : props){
 			String name = prop.getDisplayName();
 			if("class".equals(name))
@@ -92,5 +142,9 @@ public class BeanUtil {
 			}
 		}
 	}
+
+    public static interface FieldNavigator {
+        public void onField(String fieldName, Object value);
+    }
 
 }

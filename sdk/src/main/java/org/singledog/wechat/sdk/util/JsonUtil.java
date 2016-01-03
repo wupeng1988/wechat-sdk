@@ -68,7 +68,7 @@ public class JsonUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> toMap(String json) throws IOException{
+	public static Map<String, Object> toMap(String json) {
 		return fromJson(json, Map.class);
 	}
 	
