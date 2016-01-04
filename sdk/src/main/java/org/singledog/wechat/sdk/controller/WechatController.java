@@ -88,7 +88,8 @@ public class WechatController {
 				WeChatMessage result = messageHandler.handle(message);
 				MessageEntity resultEntity = null;
 				if (result != null) {
-					msg = XmlUtil2.beanToXml(result);
+//					msg = XmlUtil2.beanToXml(result);
+					msg = result.toXml();
 					resultEntity = new MessageEntity(result);
 				} else {
 					resultEntity = new MessageEntity();

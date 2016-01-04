@@ -27,4 +27,17 @@ public class ReplyTextMessage extends AbstractMessage {
     public void setContent(String content) {
         Content = content;
     }
+
+    @Override
+    public String toXml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>\n")
+                .append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]</ToUserName>\n")
+                .append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]</FromUserName>\n")
+                .append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>\n")
+                .append("<MsgType><![CDATA[text]]></MsgType>\n")
+                .append("<Content><![CDATA[").append(this.getContent()).append("]]></Content>\n")
+                .append("</xml>");
+        return sb.toString();
+    }
 }

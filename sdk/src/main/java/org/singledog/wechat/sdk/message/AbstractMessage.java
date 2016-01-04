@@ -48,4 +48,9 @@ public abstract class AbstractMessage implements WeChatMessage {
     public void setMsgType(String msgType) {
         MsgType = msgType;
     }
+
+    @Override
+    public String toXml() {
+        return null;
+    }
 }

@@ -15,4 +15,6 @@ public interface WeChatMessage {
     long getCreateTime();
 
     String getMsgType();
+
+    String toXml();
 }
