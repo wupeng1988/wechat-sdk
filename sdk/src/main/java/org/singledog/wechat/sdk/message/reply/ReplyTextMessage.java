@@ -9,7 +9,7 @@ import org.singledog.wechat.sdk.message.WeChatMessage;
  */
 public class ReplyTextMessage extends AbstractMessage {
 
-    private String content;
+    private String Content;
 
     public ReplyTextMessage(){}
 
@@ -21,10 +21,10 @@ public class ReplyTextMessage extends AbstractMessage {
     }
 
     public String getContent() {
-        return content;
+        return Content;
     }
 
     public void setContent(String content) {
-        this.content = content;
+        Content = content;
     }
 }

@@ -1,6 +1,8 @@
 package org.singledog.wechat.sdk.token;
 
-public class AccessToken {
+import java.io.Serializable;
+
+public class AccessToken implements Serializable {
 
     private String access_token;
     private int expires_in;//秒

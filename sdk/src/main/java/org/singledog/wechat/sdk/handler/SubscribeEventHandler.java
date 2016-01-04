@@ -1,5 +1,7 @@
 package org.singledog.wechat.sdk.handler;
 
+import org.singledog.wechat.sdk.conf.WechatConfig;
+import org.singledog.wechat.sdk.message.AbstractMessage;
 import org.singledog.wechat.sdk.message.MessageHandler;
 import org.singledog.wechat.sdk.message.SubscribeEvent;
 import org.singledog.wechat.sdk.message.WeChatMessage;
@@ -35,6 +37,8 @@ public class SubscribeEventHandler implements MessageHandler<SubscribeEvent>, In
     private String subscribeConfigContent;
     @Value("${wechat.sdk.onsubscribe.class}")
     private String subscribeConfigClass;
+    @Autowired
+    private WechatConfig wechatConfig;
 
     private Class<? extends WeChatMessage> realClass;
 
@@ -50,16 +54,23 @@ public class SubscribeEventHandler implements MessageHandler<SubscribeEvent>, In
 
     @Override
     public WeChatMessage handle(SubscribeEvent message) {
-        String openId = message.getFromUserName();
-        UserInfo userInfo = userComponent.getUserInfo(openId, null);
-        userInfo.setId(UUIDUtil.randomUUID());
-        userRepository.save(userInfo);
+        if (wechatConfig.isAuthenticated()) {
+            String openId = message.getFromUserName();
+            UserInfo userInfo = userComponent.getUserInfo(openId, null);
+            userInfo.setId(UUIDUtil.randomUUID());
+            userRepository.save(userInfo);
+        }
 
         try {
             String json = FileUtil.readString(subscribeConfigContent);
             Map<String, Object> beanMap = BeanUtil.beanToMap(message);
             json = FileUtil.replace(json, beanMap);
-            WeChatMessage result = JsonUtil.fromJson(json, realClass);
+            WeChatMessage result = BeanUtil.mapToBean(JsonUtil.toMap(json), realClass);
+            if (result instanceof AbstractMessage) {
+                ((AbstractMessage) result).setFromUserName(message.getToUserName());
+                ((AbstractMessage) result).setToUserName(message.getFromUserName());
+                ((AbstractMessage) result).setCreateTime(System.currentTimeMillis() / 1000);
+            }
             return result;
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage(), e);

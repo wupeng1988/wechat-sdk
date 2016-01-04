@@ -1,0 +1,6 @@
+{
+  "ToUserName":"${FromUserName}",
+  "FromUserName":"${ToUserName}",
+  "MsgType":"text",
+  "Content":"欢迎关注程序员！ 本订阅号致力于为程序员提供国内外优质、专业、有深度的技术文章！没事也可以调戏一下机器人哦 ^_^ "
+}

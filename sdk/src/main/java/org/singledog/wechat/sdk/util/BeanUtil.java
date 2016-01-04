@@ -117,7 +117,7 @@ public class BeanUtil {
         navigateFields(bean, new FieldNavigator() {
             @Override
             public void onField(String fieldName, Object value) {
-                map.put(fieldName, value);
+                map.put(StringUtils.capitalize(fieldName), value);
             }
         });
 

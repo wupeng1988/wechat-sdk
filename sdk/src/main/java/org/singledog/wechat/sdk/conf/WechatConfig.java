@@ -20,6 +20,8 @@ public class WechatConfig {
     private String appId;
     @Value("${wechat.sdk.appSecret}")
     private String appSecret;
+    @Value("${wechat.sdk.authenticated}")
+    private boolean authenticated;
 
     @Bean
     public RestTemplate restTemplate() {
@@ -36,5 +38,9 @@ public class WechatConfig {
 
     public String getAppSecret() {
         return appSecret;
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
     }
 }

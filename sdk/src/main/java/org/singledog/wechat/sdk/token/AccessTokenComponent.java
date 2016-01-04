@@ -60,7 +60,7 @@ public class AccessTokenComponent {
             token = new AccessToken();
             token.setAccess_token((String) map.get("access_token"));
             token.setExpires_in((int) map.get("expires_in"));
-            valueOperations.set(key, token, 7100, TimeUnit.SECONDS);
+            valueOperations.set(key, token, token.getExpires_in() - 10, TimeUnit.SECONDS);
             return token;
         }
     }
