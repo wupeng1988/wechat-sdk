@@ -5,6 +5,8 @@ import org.singledog.wechat.sdk.handler.HandlerDispatcher;
 import org.singledog.wechat.sdk.message.MessageFactory;
 import org.singledog.wechat.sdk.message.MessageHandler;
 import org.singledog.wechat.sdk.message.WeChatMessage;
+import org.singledog.wechat.sdk.message.entity.MessageEntity;
+import org.singledog.wechat.sdk.message.entity.MessageService;
 import org.singledog.wechat.sdk.util.CommonEncryptUtil;
 import org.singledog.wechat.sdk.util.XmlUtil2;
 import org.slf4j.Logger;
@@ -33,6 +35,8 @@ public class WechatController {
     private HandlerDispatcher dispatcher;
     @Autowired
     private MessageFactory messageFactory;
+	@Autowired
+	private MessageService messageService;
 
 
 	/**
@@ -59,17 +63,36 @@ public class WechatController {
 		}
 
         logger.debug("recieved xml : {}", xml);
-        String msg = "";
         Map<String, String> xmlMap = XmlUtil2.toMap(xml);
         WeChatMessage message = messageFactory.getMessage(xmlMap);
-        if (message != null) {
-            MessageHandler messageHandler = dispatcher.getMessageHandler(message.getClass());
-            if (messageHandler != null) {
-                WeChatMessage result = messageHandler.handle(message);
-                if (request != null)
-                    msg = XmlUtil2.beanToXml(result);
-            }
-        }
+
+		return this.dealWithMessage(message);
+	}
+
+
+	private String dealWithMessage(WeChatMessage message) {
+		String msg = "";
+		if (message != null) {
+			MessageEntity messageEntity = new MessageEntity(message);
+			this.messageService.saveMessage(messageEntity);
+
+			MessageHandler messageHandler = dispatcher.getMessageHandler(message.getClass());
+			if (messageHandler != null) {
+				WeChatMessage result = messageHandler.handle(message);
+				MessageEntity resultEntity = null;
+				if (result != null) {
+					msg = XmlUtil2.beanToXml(result);
+					resultEntity = new MessageEntity(result);
+				} else {
+					resultEntity = new MessageEntity();
+					resultEntity.setFromUserName(messageEntity.getToUserName());
+					resultEntity.setToUserName(messageEntity.getFromUserName());
+				}
+
+				resultEntity.setReplyId(messageEntity.getId());
+				this.messageService.saveMessage(resultEntity);
+			}
+		}
 
 		return msg;
 	}
@@ -110,43 +133,4 @@ public class WechatController {
 		
 		return "fail";
 	}
-	
-	/**
-	 * 获取js sdk 签名相关信息
-	 * @param request
-	 * @param response
-	 * @return
-	 *//*
-	@RequestMapping(value="/jsToken", produces={"application/json;charset=UTF-8"})
-	public @ResponseBody Object JSToken(HttpServletRequest request, HttpServletResponse response){
-		ResponseUtil.allowCrossDomain(response);
-		String key = request.getParameter("key");
-		
-		CommonVO vo = new CommonVO();
-		if(StringUtils.isEmpty(key)){
-			vo.setCode(1400);
-			vo.setMsg("key can not be null");
-			vo.setData("");
-			return vo;
-		}
-		try {
-			JedisCommands jedis = RedisDBUtil.getRedisTemplate();
-			JSSignature signature = TokenHolder2M.getJsSignature(jedis, key);
-			JSSignatureVO jsVO = new JSSignatureVO();
-			jsVO.setAppId(signature.getAppId());
-			jsVO.setNoncestr(signature.getNoncestr());
-			jsVO.setSignature(signature.getSignature());
-			jsVO.setTimestamp(signature.getTimestamp());
-			RedisDBUtil.closeJedis(jedis);
-			
-			vo.setCode(200);
-			vo.setData(jsVO);
-			vo.setMsg("success!");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage(), e);
-		}
-		return vo;
-	}*/
 }

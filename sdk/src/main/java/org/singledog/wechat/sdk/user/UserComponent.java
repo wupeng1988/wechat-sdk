@@ -8,6 +8,10 @@ import org.singledog.wechat.sdk.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +26,8 @@ public class UserComponent {
 	private RestTemplate restTemplate;
     @Autowired
     private AccessTokenComponent tokenComponent;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	/**
 	 * 
@@ -46,4 +52,15 @@ public class UserComponent {
 		UserInfo info = JsonUtil.fromJson(json, UserInfo.class);
 		return info;
 	}
+
+
+	public  UserInfo getUserInfoFromDB(String openId) {
+		Criteria criteria = Criteria.where("openid").is(openId);
+		Query query = new Query(criteria);
+		query.with(new Sort(Sort.Direction.DESC, "subscribe_time"));
+		query.limit(1);
+
+		return this.mongoTemplate.findOne(query, UserInfo.class);
+	}
+
 }
