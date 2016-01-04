@@ -20,7 +20,7 @@
     </dependencies>
 
     <properties>
-        <start-class>com.navinfo.opentsp.user.web.Application</start-class>
+        <start-class>org.singledog.programmer.Application</start-class>
     </properties>
 
     <profiles>

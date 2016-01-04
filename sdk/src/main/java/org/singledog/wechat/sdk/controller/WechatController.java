@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -44,12 +46,10 @@ public class WechatController {
 	 * 
 	 * @param request
 	 * @param response
-	 * @param xml
 	 * @return
 	 */
 	@RequestMapping(value="/interaction", produces = {"text/html;charset=UTF-8"})
-	public @ResponseBody String callback(HttpServletRequest request, HttpServletResponse response, 
-			@RequestBody(required=true) String xml){
+	public @ResponseBody String callback(HttpServletRequest request, HttpServletResponse response){
 		response.setCharacterEncoding("utf-8");
 
 		Map<String, String[]> map = request.getParameterMap();
@@ -57,8 +57,15 @@ public class WechatController {
             logger.debug("check auth ...");
 			return this.tokenAuth(request, response);
 		}
-		
-		if(xml == null || "".equals(xml)){
+
+        String xml = null;
+        try {
+            xml = HttpRequestUtil.readString(request.getInputStream());
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            return "";
+        }
+        if(xml == null || "".equals(xml)){
 			return "";
 		}
 
@@ -132,5 +139,17 @@ public class WechatController {
 		}
 		
 		return "fail";
+	}
+
+	public static void main(String[] args) {
+		String token = "E1EC9E65F61744BAB3CC0C0BACA14EB9";
+		String timestamp = System.currentTimeMillis()/1000 + "";
+		String nonce = "ASDDVFDAWER";
+		String[] params = new String[]{token, timestamp, nonce};
+		Arrays.sort(params);
+
+		String auth = CommonEncryptUtil.SHA1(params[0]+params[1]+params[2]);
+		System.out.println(auth);
+		System.out.println(timestamp);
 	}
 }
