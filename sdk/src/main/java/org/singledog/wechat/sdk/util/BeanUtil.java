@@ -12,10 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BeanUtil {
@@ -23,6 +20,7 @@ public class BeanUtil {
 	private static final Logger logger = LoggerFactory.getLogger(BeanUtil.class);
 	
 	private static Map<String, PropertyDescriptor[]> class_infos = new ConcurrentHashMap<>();
+	private static final Object[] emptyArray = new Object[0];
 
 	public static <T> T mapToBeanByJson(Map<String, ? extends Object> map, Class<T> clazz){
 		try {
@@ -33,15 +31,17 @@ public class BeanUtil {
 	}
 
     public static void navigateFields(Object bean, FieldNavigator navigator) {
-        PropertyDescriptor[] propertyDescriptors = getClassPropertyDescriptors(bean.getClass(), true);
+        PropertyDescriptor[] propertyDescriptors = getClassPropertyDescriptors(bean.getClass(), false);
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
             String name = propertyDescriptor.getName();
+            if("class".equals(name))
+                continue;
             Object value = null;
             try {
                 Method method = propertyDescriptor.getReadMethod();
                 if (method != null) {
                     method.setAccessible(true);
-                    value = method.invoke(bean, null);
+                    value = method.invoke(bean, emptyArray);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,11 +63,11 @@ public class BeanUtil {
 		}
 
 		PropertyDescriptor[] properties = BeanUtils.getPropertyDescriptors(clazz);
-        List<PropertyDescriptor> propertyDescriptorList = Arrays.asList(properties);
+        List<PropertyDescriptor> propertyDescriptorList = new ArrayList<>(Arrays.asList(properties));
 
         if (cascade) {
             Class superClazz = clazz.getSuperclass();
-            if (superClazz != null && !superClazz.isInterface()) {
+            if (superClazz != null && superClazz != Object.class && !superClazz.isInterface()) {
                 properties = getClassPropertyDescriptors(superClazz, cascade);
                 propertyDescriptorList.addAll(Arrays.asList(properties));
             }
@@ -82,7 +82,7 @@ public class BeanUtil {
 		String className = clazz.getName();
 		try {
 			T instance = clazz.newInstance();
-			PropertyDescriptor[] props = getClassPropertyDescriptors(clazz, true);
+			PropertyDescriptor[] props = getClassPropertyDescriptors(clazz, false);
 			for(PropertyDescriptor prop : props){
 				String name = prop.getName();
 				if("class".equals(name))
@@ -125,7 +125,7 @@ public class BeanUtil {
     }
 	
 	public static <T> void copyAttrs4Update(T dest, T source){
-		PropertyDescriptor[] props = getClassPropertyDescriptors(dest.getClass(), true);
+		PropertyDescriptor[] props = getClassPropertyDescriptors(dest.getClass(), false);
 		for(PropertyDescriptor prop : props){
 			String name = prop.getDisplayName();
 			if("class".equals(name))

@@ -5,7 +5,6 @@ import org.singledog.wechat.sdk.message.SubscribeEvent;
 import org.singledog.wechat.sdk.message.WeChatMessage;
 import org.singledog.wechat.sdk.user.UserComponent;
 import org.singledog.wechat.sdk.user.UserInfo;
-import org.singledog.wechat.sdk.user.UserRepository;
 import org.singledog.wechat.sdk.util.BeanUtil;
 import org.singledog.wechat.sdk.util.FileUtil;
 import org.singledog.wechat.sdk.util.JsonUtil;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.FileNotFoundException;
@@ -39,7 +39,7 @@ public class SubscribeEventHandler implements MessageHandler<SubscribeEvent>, In
     private Class<? extends WeChatMessage> realClass;
 
     @Autowired
-    private UserRepository userRepository;
+    private MongoTemplate userRepository;
     @Autowired
     private UserComponent userComponent;
 

@@ -4,9 +4,21 @@ import org.singledog.wechat.sdk.handler.analyzer.MessageAnalyzer;
 import org.singledog.wechat.sdk.message.MessageTypes;
 import org.singledog.wechat.sdk.message.TextMessage;
 import org.singledog.wechat.sdk.message.WeChatMessage;
+import org.singledog.wechat.sdk.message.reply.ReplyTextMessage;
+import org.singledog.wechat.sdk.util.HttpUtil;
+import org.singledog.wechat.sdk.util.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,6 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("enable-robot")
 public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
+    private static final Logger logger = LoggerFactory.getLogger(RobotTextAnalyzer.class);
 
     @Value("${wechat.sdk.robot.key}")
     private String robotKey;
@@ -30,7 +43,48 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
 
     @Override
     public WeChatMessage analyze(TextMessage weChatMessage) {
-        return null;
+        String info = weChatMessage.getContent();
+        Map<String, String> params = new HashMap<>();
+        params.put("key", robotKey);
+        params.put("info", info);
+        params.put("userid", weChatMessage.getFromUserName());
+
+        ReplyTextMessage replyTextMessage = new ReplyTextMessage(weChatMessage);
+
+        try {
+            String json = HttpUtil.post(robotURI, HttpUtil.toParams(params));
+            Map<String, Object> map = JsonUtil.toMap(json);
+            int code = Integer.valueOf(String.valueOf(map.get("code")));
+            Class clazz = null;
+            try {
+                RobotResults results = RobotResults.valueOf(code);
+                if (results != null) {
+                    clazz = results.resultClass();
+                }
+            } catch (IllegalArgumentException e) {
+                clazz = RobotResults.text.resultClass();
+            }
+
+            String message = null;
+            if (clazz != null) {
+                Object obj = JsonUtil.fromJson(json, clazz);
+                if (obj != null) {
+                    message = obj.toString();
+                }
+            }
+
+            if (StringUtils.isEmpty(message)) {
+                replyTextMessage.setContent("Oops... 出错了...");
+            } else {
+                replyTextMessage.setContent(message);
+            }
+        } catch (Exception e) {
+            logger.error("error request robot response with data : {}", info);
+            logger.error(e.getMessage(), e);
+            replyTextMessage.setContent("Oops... 出错了...");
+        }
+
+        return replyTextMessage;
     }
 
     @Override

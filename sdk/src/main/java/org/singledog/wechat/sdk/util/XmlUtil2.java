@@ -6,6 +6,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -47,7 +48,8 @@ public class XmlUtil2 {
         BeanUtil.navigateFields(bean, new BeanUtil.FieldNavigator() {
             @Override
             public void onField(String fieldName, Object value) {
-                sb.append("<").append(fieldName).append("><![CDATA[").append(value).append("]]</").append(fieldName).append(">");
+				String name = StringUtils.capitalize(fieldName);
+                sb.append("<").append(name).append("><![CDATA[").append(value).append("]]</").append(name).append(">");
             }
         });
 
