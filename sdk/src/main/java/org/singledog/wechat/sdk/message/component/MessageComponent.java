@@ -8,6 +8,7 @@ import org.singledog.wechat.sdk.util.HttpUtil;
 import org.singledog.wechat.sdk.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class MessageComponent {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MessageComponent.class);
 
+    @Autowired
     private AccessTokenComponent tokenComponent;
 
 	/**

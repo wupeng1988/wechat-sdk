@@ -2,3 +2,7 @@
 target/
 *.class
 *.iml
+log/
+logs/
+*.log
+*.out
