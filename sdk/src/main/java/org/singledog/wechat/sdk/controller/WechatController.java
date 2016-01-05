@@ -31,6 +31,8 @@ public class WechatController {
 
 	private static final Logger logger = LoggerFactory.getLogger(WechatController.class);
 
+	static final String ok = "success";
+
 	@Autowired
 	private WechatConfig config;
     @Autowired
@@ -48,7 +50,7 @@ public class WechatController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value="/interaction", produces = {"text/html;charset=UTF-8"})
+	@RequestMapping(value="/interaction", produces = {"plain/text;charset=UTF-8"})
 	public @ResponseBody String callback(HttpServletRequest request, HttpServletResponse response){
 		response.setCharacterEncoding("utf-8");
 
@@ -63,10 +65,10 @@ public class WechatController {
             xml = HttpRequestUtil.readString(request.getInputStream());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
-            return "";
+            return ok;
         }
         if(xml == null || "".equals(xml)){
-			return "";
+			return ok;
 		}
 
         logger.debug("recieved xml : {}", xml);
@@ -78,7 +80,7 @@ public class WechatController {
 
 
 	private String dealWithMessage(WeChatMessage message) {
-		String msg = "";
+		String msg = ok;
 		if (message != null) {
 			MessageEntity messageEntity = new MessageEntity(message);
 			this.messageService.saveMessage(messageEntity);
@@ -88,8 +90,8 @@ public class WechatController {
 				WeChatMessage result = messageHandler.handle(message);
 				MessageEntity resultEntity = null;
 				if (result != null) {
-//					msg = XmlUtil2.beanToXml(result);
-					msg = result.toXml();
+					msg = XmlUtil2.beanToXml(result);
+//					msg = result.toXml();
 					resultEntity = new MessageEntity(result);
 				} else {
 					resultEntity = new MessageEntity();

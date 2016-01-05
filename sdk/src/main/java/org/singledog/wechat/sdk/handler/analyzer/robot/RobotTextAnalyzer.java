@@ -4,6 +4,7 @@ import org.singledog.wechat.sdk.handler.analyzer.MessageAnalyzer;
 import org.singledog.wechat.sdk.message.MessageTypes;
 import org.singledog.wechat.sdk.message.TextMessage;
 import org.singledog.wechat.sdk.message.WeChatMessage;
+import org.singledog.wechat.sdk.message.component.MessageComponent;
 import org.singledog.wechat.sdk.message.reply.ReplyTextMessage;
 import org.singledog.wechat.sdk.util.HttpUtil;
 import org.singledog.wechat.sdk.util.JsonUtil;
@@ -35,6 +36,8 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
     private String robotKey;
     @Value("${wechat.sdk.robot.uri}")
     private String robotURI;
+    @Autowired
+    private MessageComponent messageComponent;
 
     @Override
     public int order() {
@@ -49,8 +52,7 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
         params.put("info", info);
         params.put("userid", weChatMessage.getFromUserName());
 
-        ReplyTextMessage replyTextMessage = new ReplyTextMessage(weChatMessage);
-
+        String message = null;
         try {
             String json = HttpUtil.post(robotURI, HttpUtil.toParams(params));
             Map<String, Object> map = JsonUtil.toMap(json);
@@ -65,7 +67,6 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
                 clazz = RobotResults.text.resultClass();
             }
 
-            String message = null;
             if (clazz != null) {
                 Object obj = JsonUtil.fromJson(json, clazz);
                 if (obj != null) {
@@ -74,17 +75,21 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
             }
 
             if (StringUtils.isEmpty(message)) {
-                replyTextMessage.setContent("Oops... 出错了...");
-            } else {
-                replyTextMessage.setContent(message);
+                message = "Oops... 出错了...";
             }
         } catch (Exception e) {
             logger.error("error request robot response with data : {}", info);
             logger.error(e.getMessage(), e);
-            replyTextMessage.setContent("Oops... 出错了...");
+            message = "Oops... 出错了...";
         }
 
-        return replyTextMessage;
+        try {
+            this.messageComponent.sendCustomTextMessage(weChatMessage.getFromUserName(), message);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return null;
     }
 
     @Override
