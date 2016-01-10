@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<auto-reply-messages>
+	<message-group type="text">
+		<message keyword="default">
+			您好，你发送的指令无法识别!
+		</message>
+		<message keyword="123">
+			sadsdgergwet
+		</message>
+	</message-group>
+	
+	<message-group type="event">
+		<!-- 关注，或者未关注时扫描了二维码 -->
+		<message keyword="subscribe">
+			您好，欢迎关注本公众号
+		</message>
+		<!-- 取消关注 -->
+		<!-- <message keyword="unsubscribe" handler_type="class" value="com.dptech..."></message> -->
+		<!-- 关注了之后扫描二维码 -->
+		<!-- <message keyword="SCAN" handler_type="class" value="com.dptech..."></message> -->
+		<!-- 上报地理位置 -->
+		<!-- <message keyword="LOCATION" handler_type="class" value="com.dptech..."></message> -->
+		<!-- 点击菜单拉取消息 -->
+		<!-- <message keyword="CLICK" handler_type="class" value="com.dptech..."></message> -->
+		<!-- 点击菜单跳转链接 -->
+		<!-- <message keyword="VIEW" handler_type="class" value="com.dptech..."></message> -->
+	</message-group>
+</auto-reply-messages>

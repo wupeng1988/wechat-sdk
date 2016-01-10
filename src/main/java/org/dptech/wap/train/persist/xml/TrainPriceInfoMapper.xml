@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.dptech.wap.train.persist.mapper.TrainPriceInfoMapper">
+	<resultMap id="BaseResultMap"
+		type="org.dptech.wap.train.persist.model.TrainPriceInfo">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="train_no" property="trainNo" jdbcType="VARCHAR" />
+		<result column="seat_type_code" property="seatTypeCode"
+			jdbcType="VARCHAR" />
+		<result column="price" property="price" jdbcType="DOUBLE" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_timestamp" property="updateTimestamp"
+			jdbcType="BIGINT" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, train_no, seat_type_code, price, create_time, update_time,
+		update_timestamp
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from train_price_info
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getPriceInfoByTrainNoAndSeatType" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from train_price_info
+		where train_no = #{trainNo,jdbcType=VARCHAR} and seat_type_code = #{seatType,jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from train_price_info
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="org.dptech.wap.train.persist.model.TrainPriceInfo">
+		insert into train_price_info (id, train_no, seat_type_code,
+		price, create_time, update_time,
+		update_timestamp)
+		values (#{id,jdbcType=VARCHAR}, #{trainNo,jdbcType=VARCHAR},
+		#{seatTypeCode,jdbcType=VARCHAR},
+		#{price,jdbcType=DOUBLE}, now(), #{updateTime,jdbcType=TIMESTAMP},
+		#{updateTimestamp,jdbcType=BIGINT})
+	</insert>
+	<insert id="insertSelective" parameterType="org.dptech.wap.train.persist.model.TrainPriceInfo">
+		insert into train_price_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="trainNo != null">
+				train_no,
+			</if>
+			<if test="seatTypeCode != null">
+				seat_type_code,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="updateTimestamp != null">
+				update_timestamp,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="trainNo != null">
+				#{trainNo,jdbcType=VARCHAR},
+			</if>
+			<if test="seatTypeCode != null">
+				#{seatTypeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=DOUBLE},
+			</if>
+			<if test="createTime != null">
+				now(),
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTimestamp != null">
+				#{updateTimestamp,jdbcType=BIGINT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="org.dptech.wap.train.persist.model.TrainPriceInfo">
+		update train_price_info
+		<set>
+			<if test="trainNo != null">
+				train_no = #{trainNo,jdbcType=VARCHAR},
+			</if>
+			<if test="seatTypeCode != null">
+				seat_type_code = #{seatTypeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DOUBLE},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTimestamp != null">
+				update_timestamp = #{updateTimestamp,jdbcType=BIGINT},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="org.dptech.wap.train.persist.model.TrainPriceInfo">
+		update train_price_info
+		set train_no = #{trainNo,jdbcType=VARCHAR},
+		seat_type_code = #{seatTypeCode,jdbcType=VARCHAR},
+		price = #{price,jdbcType=DOUBLE},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_timestamp = #{updateTimestamp,jdbcType=BIGINT}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>
