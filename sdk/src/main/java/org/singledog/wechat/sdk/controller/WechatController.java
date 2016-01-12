@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.util.SystemPropertyUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,36 +27,36 @@ import java.util.Map;
 @RequestMapping("${wechat.sdk.controller.path:/wechat}")
 public class WechatController {
 
-	private static final Logger logger = LoggerFactory.getLogger(WechatController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WechatController.class);
 
-	static final String ok = "success";
+    static final String ok = "success";
 
-	@Autowired
-	private WechatConfig config;
+    @Autowired
+    private WechatConfig config;
     @Autowired
     private HandlerDispatcher dispatcher;
     @Autowired
     private MessageFactory messageFactory;
-	@Autowired
-	private MessageService messageService;
+    @Autowired
+    private MessageService messageService;
 
 
-	/**
-	 * 互动
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value="/interaction", produces = {"plain/text;charset=UTF-8"})
-	public @ResponseBody String callback(HttpServletRequest request, HttpServletResponse response){
-		response.setCharacterEncoding("utf-8");
+    /**
+     * 互动
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/interaction")
+    public String callback(HttpServletRequest request, HttpServletResponse response) {
+        response.setCharacterEncoding("utf-8");
 
-		Map<String, String[]> map = request.getParameterMap();
-		if(map.containsKey("signature") && map.containsKey("timestamp") && map.containsKey("nonce") && map.containsKey("echostr")){
+        Map<String, String[]> map = request.getParameterMap();
+        if (map.containsKey("signature") && map.containsKey("timestamp") && map.containsKey("nonce") && map.containsKey("echostr")) {
             logger.debug("check auth ...");
-			return this.tokenAuth(request, response);
-		}
+            return this.tokenAuth(request);
+        }
 
         String xml = null;
         try {
@@ -67,92 +65,92 @@ public class WechatController {
             logger.error(e.getMessage(), e);
             return ok;
         }
-        if(xml == null || "".equals(xml)){
-			return ok;
-		}
+        if (xml == null || "".equals(xml)) {
+            HttpRequestUtil.writeToResponse(response, ok, null);
+            return ok;
+        }
 
         logger.debug("recieved xml : {}", xml);
         Map<String, String> xmlMap = XmlUtil2.toMap(xml);
         WeChatMessage message = messageFactory.getMessage(xmlMap);
 
-		return this.dealWithMessage(message);
-	}
+        return this.dealWithMessage(message);
+    }
 
 
-	private String dealWithMessage(WeChatMessage message) {
-		String msg = ok;
-		if (message != null) {
-			MessageEntity messageEntity = new MessageEntity(message);
-			this.messageService.saveMessage(messageEntity);
+    private String dealWithMessage(WeChatMessage message) {
+        String msg = ok;
+        if (message != null) {
+            MessageEntity messageEntity = new MessageEntity(message);
+            this.messageService.saveMessage(messageEntity);
 
-			MessageHandler messageHandler = dispatcher.getMessageHandler(message.getClass());
-			if (messageHandler != null) {
-				WeChatMessage result = messageHandler.handle(message);
-				MessageEntity resultEntity = null;
-				if (result != null) {
-					msg = XmlUtil2.beanToXml(result);
-//					msg = result.toXml();
-					resultEntity = new MessageEntity(result);
-				} else {
-					resultEntity = new MessageEntity();
-					resultEntity.setFromUserName(messageEntity.getToUserName());
-					resultEntity.setToUserName(messageEntity.getFromUserName());
-				}
+            MessageHandler messageHandler = dispatcher.getMessageHandler(message.getClass());
+            if (messageHandler != null) {
+                WeChatMessage result = messageHandler.handle(message);
+                MessageEntity resultEntity = null;
+                if (result != null) {
+                    msg = result.toXml();
+                    if (StringUtils.isEmpty(msg)) {
+                        msg = XmlUtil2.beanToXml(result);
+                    }
+                    resultEntity = new MessageEntity(result);
+                } else {
+                    resultEntity = new MessageEntity();
+                    resultEntity.setFromUserName(messageEntity.getToUserName());
+                    resultEntity.setToUserName(messageEntity.getFromUserName());
+                }
 
-				resultEntity.setReplyId(messageEntity.getId());
-				this.messageService.saveMessage(resultEntity);
-			}
-		}
+                resultEntity.setReplyId(messageEntity.getId());
+                this.messageService.saveMessage(resultEntity);
+            }
+        }
 
-		return msg;
-	}
-	
-	
-	
-	/**
-	 * 微信校验token
-	 * 加密/校验流程如下：
-		1. 将token、timestamp、nonce三个参数进行字典序排序
-		2. 将三个参数字符串拼接成一个字符串进行sha1加密
-		3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-//	@RequestMapping(value="/tokenAuth", produces = {"text/html;charset=UTF-8"})
-	public String tokenAuth(HttpServletRequest request, HttpServletResponse response){
-		
-		String token = config.getToken();
-		String timestamp = request.getParameter("timestamp");
-		String nonce = request.getParameter("nonce");
-		String signature = request.getParameter("signature");
-		String msg = request.getParameter("echostr");
-		
-		if(StringUtils.isEmpty(signature)){
-			return "fail";
-		}
-		
-		String[] params = new String[]{token, timestamp, nonce};
-		Arrays.sort(params);
-		
-		String auth = CommonEncryptUtil.SHA1(params[0]+params[1]+params[2]);
-		if(signature.equals(auth)){
-			return msg;
-		}
-		
-		return "fail";
-	}
+        return msg;
+    }
 
-	public static void main(String[] args) {
-		String token = "E1EC9E65F61744BAB3CC0C0BACA14EB9";
-		String timestamp = System.currentTimeMillis()/1000 + "";
-		String nonce = "ASDDVFDAWER";
-		String[] params = new String[]{token, timestamp, nonce};
-		Arrays.sort(params);
 
-		String auth = CommonEncryptUtil.SHA1(params[0]+params[1]+params[2]);
-		System.out.println(auth);
-		System.out.println(timestamp);
-	}
+    /**
+     * 微信校验token
+     * 加密/校验流程如下：
+     * 1. 将token、timestamp、nonce三个参数进行字典序排序
+     * 2. 将三个参数字符串拼接成一个字符串进行sha1加密
+     * 3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
+     *
+     * @param request
+     * @return
+     */
+    public String tokenAuth(HttpServletRequest request) {
+
+        String token = config.getToken();
+        String timestamp = request.getParameter("timestamp");
+        String nonce = request.getParameter("nonce");
+        String signature = request.getParameter("signature");
+        String msg = request.getParameter("echostr");
+
+        if (StringUtils.isEmpty(signature)) {
+            return "fail";
+        }
+
+        String[] params = new String[]{token, timestamp, nonce};
+        Arrays.sort(params);
+
+        String auth = CommonEncryptUtil.SHA1(params[0] + params[1] + params[2]);
+        if (signature.equals(auth)) {
+            return msg;
+        }
+
+        return "fail";
+    }
+
+    public static void main(String[] args) {
+        String token = "E1EC9E65F61744BAB3CC0C0BACA14EB9";
+        String timestamp = System.currentTimeMillis() / 1000 + "";
+        String nonce = "ASDDVFDAWER";
+        String[] params = new String[]{token, timestamp, nonce};
+        Arrays.sort(params);
+
+        String auth = CommonEncryptUtil.SHA1(params[0] + params[1] + params[2]);
+        System.out.println(auth);
+        System.out.println(timestamp);
+    }
 }
