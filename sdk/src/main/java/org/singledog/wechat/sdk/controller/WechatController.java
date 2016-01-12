@@ -14,12 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -58,23 +56,21 @@ public class WechatController {
             return this.tokenAuth(request);
         }
 
-        String xml = null;
         try {
-            xml = HttpRequestUtil.readString(request.getInputStream());
-        } catch (IOException e) {
+            String xml = HttpRequestUtil.readString(request.getInputStream());
+            if (StringUtils.isEmpty(xml)) {
+                return ok;
+            }
+
+            logger.debug("recieved xml : {}", xml);
+            Map<String, String> xmlMap = XmlUtil2.toMap(xml);
+            WeChatMessage message = messageFactory.getMessage(xmlMap);
+
+            return this.dealWithMessage(message);
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return ok;
         }
-        if (xml == null || "".equals(xml)) {
-            HttpRequestUtil.writeToResponse(response, ok, null);
-            return ok;
-        }
-
-        logger.debug("recieved xml : {}", xml);
-        Map<String, String> xmlMap = XmlUtil2.toMap(xml);
-        WeChatMessage message = messageFactory.getMessage(xmlMap);
-
-        return this.dealWithMessage(message);
     }
 
 

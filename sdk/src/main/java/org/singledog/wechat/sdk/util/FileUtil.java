@@ -35,12 +35,14 @@ public class FileUtil {
         String json = null;
 
         Resource resource = null;
-        if (name.contains(":")) {
-            String[] names = name.split(":");
-            if ("file".equals(names[0])) {
-                resource = new FileSystemResource(names[1]);
+        int index = name.indexOf(":");
+        if (index > 0) {
+            String type = name.substring(0, index);
+            String path = name.substring(type.length() + 1);
+            if ("file".equals(type)) {
+                resource = new FileSystemResource(path);
             } else {
-                resource = new ClassPathResource(names[1]);
+                resource = new ClassPathResource(path);
             }
         } else {
             resource = new ClassPathResource(name);
