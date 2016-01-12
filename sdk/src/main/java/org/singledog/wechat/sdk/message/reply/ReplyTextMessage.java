@@ -17,7 +17,7 @@ public class ReplyTextMessage extends AbstractMessage {
         this.setFromUserName(message.getToUserName());
         this.setToUserName(message.getFromUserName());
         this.setMsgType(MessageTypes.text.name());
-        this.setCreateTime(System.currentTimeMillis() / 1000);
+        this.setCreateTime(System.currentTimeMillis());
     }
 
     public String getContent() {
@@ -28,16 +28,24 @@ public class ReplyTextMessage extends AbstractMessage {
         Content = content;
     }
 
-    @Override
-    public String toXml() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<xml>\n")
-                .append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]</ToUserName>\n")
-                .append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]</FromUserName>\n")
-                .append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>\n")
-                .append("<MsgType><![CDATA[text]]></MsgType>\n")
-                .append("<Content><![CDATA[").append(this.getContent()).append("]]></Content>\n")
-                .append("</xml>");
-        return sb.toString();
-    }
+//    @Override
+//    public String toXml() {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("<xml>")
+//                .append("<ToUserName>")
+//                .append("<![CDATA[").append(this.getToUserName()).append("]]>")
+//                .append("</ToUserName>")
+//                .append("<FromUserName>")
+//                .append("<![CDATA[").append(this.getFromUserName()).append("]]>")
+//                .append("</FromUserName>")
+//                .append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>")
+//                .append("<MsgType>")
+//                .append("<![CDATA[text]]>")
+//                .append("</MsgType>")
+//                .append("<Content>")
+//                .append("<![CDATA[").append(this.getContent()).append("]]>")
+//                .append("</Content>")
+//                .append("</xml>");
+//        return sb.toString();
+//    }
 }

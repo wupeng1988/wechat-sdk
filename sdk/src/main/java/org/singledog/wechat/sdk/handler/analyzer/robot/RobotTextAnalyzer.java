@@ -83,13 +83,9 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
             message = "Oops... 出错了...";
         }
 
-        try {
-            this.messageComponent.sendCustomTextMessage(weChatMessage.getFromUserName(), message);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
+        ReplyTextMessage replyTextMessage = new ReplyTextMessage(weChatMessage);
+        replyTextMessage.setContent(message);
+        return replyTextMessage;
     }
 
     @Override
