@@ -16,7 +16,7 @@
             <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n</Pattern>
         </encoder>
     </appender>
-    <logger name="org.singledog">
+    <logger name="org.singledog" level="DEBUG">
     	<appender-ref ref="FILE"/>
     </logger>
     <logger name="org.springframework">

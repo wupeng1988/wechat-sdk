@@ -6,7 +6,7 @@ package org.singledog.wechat.sdk.handler.analyzer.robot;
  */
 public class RobotTextResult {
 
-    public static final String seprator = "\n";
+    public static final String seprator = "";
     private int code;
     private String text;
 

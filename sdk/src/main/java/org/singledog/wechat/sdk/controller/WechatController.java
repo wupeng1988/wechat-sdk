@@ -2,6 +2,7 @@ package org.singledog.wechat.sdk.controller;
 
 import org.singledog.wechat.sdk.conf.WechatConfig;
 import org.singledog.wechat.sdk.handler.HandlerDispatcher;
+import org.singledog.wechat.sdk.holder.ThreadLocalHolder;
 import org.singledog.wechat.sdk.message.MessageFactory;
 import org.singledog.wechat.sdk.message.MessageHandler;
 import org.singledog.wechat.sdk.message.WeChatMessage;
@@ -62,6 +63,7 @@ public class WechatController {
                 return ok;
             }
 
+            ThreadLocalHolder.setOriginalXml(xml);
             logger.debug("recieved xml : {}", xml);
             Map<String, String> xmlMap = XmlUtil2.toMap(xml);
             WeChatMessage message = messageFactory.getMessage(xmlMap);

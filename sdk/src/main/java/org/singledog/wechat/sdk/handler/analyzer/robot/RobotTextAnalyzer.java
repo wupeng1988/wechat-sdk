@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * Created by adam on 16-1-4.
  */
-@Component
+//@Component
 @Profile("enable-robot")
 public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
     private static final Logger logger = LoggerFactory.getLogger(RobotTextAnalyzer.class);
@@ -36,8 +36,6 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
     private String robotKey;
     @Value("${wechat.sdk.robot.uri}")
     private String robotURI;
-    @Autowired
-    private MessageComponent messageComponent;
 
     @Override
     public int order() {
@@ -82,6 +80,8 @@ public class RobotTextAnalyzer implements MessageAnalyzer<TextMessage> {
             logger.error(e.getMessage(), e);
             message = "Oops... 出错了...";
         }
+
+        logger.debug("found message : {} for request : {}", message, info);
 
         ReplyTextMessage replyTextMessage = new ReplyTextMessage(weChatMessage);
         replyTextMessage.setContent(message);

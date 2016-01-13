@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Component
 public class TextMessageHandler implements MessageHandler<TextMessage> {
-    private static final Logger logger = LoggerFactory.getLogger(TextMessage.class);
+    private static final Logger logger = LoggerFactory.getLogger(TextMessageHandler.class);
 
     @Autowired
     private MessageAnalyzerHolder analyzerHolder;
@@ -34,7 +34,7 @@ public class TextMessageHandler implements MessageHandler<TextMessage> {
         List<MessageAnalyzer<? extends WeChatMessage>> analyzers = analyzerHolder.getAnalyzers(MessageTypes.text.name());
         for (MessageAnalyzer analyzer : analyzers) {
             if (analyzer.support(message)) {
-                logger.info("found supoorted analyzer : {}", analyzer);
+                logger.debug("found supoorted analyzer : {}", analyzer);
                 return analyzer.analyze(message);
             }
         }

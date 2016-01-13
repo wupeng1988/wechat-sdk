@@ -47,7 +47,7 @@ public class UserComponent {
 		}
 
 		String json = restTemplate.getForObject(url.toString(), String.class);
-		logger.info("get userInfo, server return : {} for url : {}", json, url.toString());
+		logger.debug("get userInfo, server return : {} for url : {}", json, url.toString());
 		ErrorCheckUtil.check(json);
 		UserInfo info = JsonUtil.fromJson(json, UserInfo.class);
 		return info;

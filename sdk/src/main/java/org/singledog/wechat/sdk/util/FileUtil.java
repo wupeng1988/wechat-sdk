@@ -60,7 +60,7 @@ public class FileUtil {
             }
             json = sb.toString();
 
-            logger.info("read file : {} ,content : {}" , name, sb.toString());
+            logger.debug("read file : {} ,content : {}" , name, sb.toString());
             FILE_CONTENT_CACHE.put(name, json);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);

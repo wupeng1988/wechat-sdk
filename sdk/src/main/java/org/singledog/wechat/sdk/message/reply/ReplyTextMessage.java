@@ -28,24 +28,24 @@ public class ReplyTextMessage extends AbstractMessage {
         Content = content;
     }
 
-//    @Override
-//    public String toXml() {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("<xml>")
-//                .append("<ToUserName>")
-//                .append("<![CDATA[").append(this.getToUserName()).append("]]>")
-//                .append("</ToUserName>")
-//                .append("<FromUserName>")
-//                .append("<![CDATA[").append(this.getFromUserName()).append("]]>")
-//                .append("</FromUserName>")
-//                .append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>")
-//                .append("<MsgType>")
-//                .append("<![CDATA[text]]>")
-//                .append("</MsgType>")
-//                .append("<Content>")
-//                .append("<![CDATA[").append(this.getContent()).append("]]>")
-//                .append("</Content>")
-//                .append("</xml>");
-//        return sb.toString();
-//    }
+    @Override
+    public String toXml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>")
+                .append("<ToUserName>")
+                .append("<![CDATA[").append(this.getToUserName()).append("]]>")
+                .append("</ToUserName>")
+                .append("<FromUserName>")
+                .append("<![CDATA[").append(this.getFromUserName()).append("]]>")
+                .append("</FromUserName>")
+                .append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>")
+                .append("<MsgType>")
+                .append("<![CDATA[text]]>")
+                .append("</MsgType>")
+                .append("<Content>")
+                .append("<![CDATA[").append(this.getContent()).append("]]>")
+                .append("</Content>")
+                .append("</xml>");
+        return sb.toString();
+    }
 }
