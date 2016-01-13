@@ -62,7 +62,7 @@ public class WechatController {
                 return ok;
             }
 
-            ThreadLocalHolder.setOriginalXml(new String(xml.getBytes(request.getCharacterEncoding()), "UTF-8"));
+            ThreadLocalHolder.setOriginalXml(xml);
             logger.debug("recieved xml : {}", xml);
             Map<String, String> xmlMap = XmlUtil2.toMap(xml);
             WeChatMessage message = messageFactory.getMessage(xmlMap);

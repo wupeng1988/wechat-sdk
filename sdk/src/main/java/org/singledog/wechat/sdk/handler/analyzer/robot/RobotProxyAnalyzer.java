@@ -36,7 +36,7 @@ public abstract class RobotProxyAnalyzer<T extends WeChatMessage> implements Mes
 
         String response = null;
         try {
-            response = HttpUtil.post(accessUrl, originalXml);
+            response = HttpUtil.post(accessUrl, originalXml, null);
         } catch (Exception e) {
             response = "Oops... 出错了...";
             ReplyTextMessage textMessage = new ReplyTextMessage(weChatMessage);

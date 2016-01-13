@@ -113,7 +113,13 @@ public class HttpUtil {
                 is = conn.getErrorStream();
             }
 
-            br = new BufferedReader(new InputStreamReader(is, encoding));
+            InputStreamReader isr = null;
+            if (StringUtils.isEmpty(isr)) {
+                isr = new InputStreamReader(is);
+            } else {
+                isr = new InputStreamReader(is, encoding);
+            }
+            br = new BufferedReader(isr);
             String msg = null;
             while ((msg = br.readLine()) != null) {
                 sb.append(msg).append("\n");
