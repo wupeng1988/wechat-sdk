@@ -18,7 +18,7 @@ public class HttpRequestUtil {
             StringBuilder sb = new StringBuilder();
             String tmp = null;
             while ((tmp = br.readLine()) != null) {
-                sb.append(tmp).append("\r\n");
+                sb.append(tmp);
             }
             return sb.toString();
         } finally {
