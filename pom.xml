@@ -49,6 +49,8 @@
 
         <redis-jedis.version>2.6.1</redis-jedis.version>
 
+        <httpcomponents-client-version>4.5</httpcomponents-client-version>
+
     </properties>
 
     <dependencies>
