@@ -1,5 +1,13 @@
 package org.singledog.wechat.sdk.controller;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.singledog.wechat.sdk.conf.WechatConfig;
 import org.singledog.wechat.sdk.handler.HandlerDispatcher;
 import org.singledog.wechat.sdk.holder.ThreadLocalHolder;
@@ -8,17 +16,23 @@ import org.singledog.wechat.sdk.message.MessageHandler;
 import org.singledog.wechat.sdk.message.WeChatMessage;
 import org.singledog.wechat.sdk.message.entity.MessageEntity;
 import org.singledog.wechat.sdk.message.entity.MessageService;
+import org.singledog.wechat.sdk.message.reply.ReplyStringMessage;
+import org.singledog.wechat.sdk.message.reply.ReplyTextMessage;
 import org.singledog.wechat.sdk.util.CommonEncryptUtil;
 import org.singledog.wechat.sdk.util.XmlUtil2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -39,6 +53,13 @@ public class WechatController {
     @Autowired
     private MessageService messageService;
 
+    private final String charset = "utf-8";
+
+    @Value("${wechat.sdk.robot.accessUrl}")
+    protected String accessUrl;
+
+    private static final CloseableHttpClient client = HttpClients.createDefault();
+
 
     /**
      * 互动
@@ -47,7 +68,7 @@ public class WechatController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/interaction")
+//    @RequestMapping(value = "/interaction")
     public String callback(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("utf-8");
         Map<String, String[]> map = request.getParameterMap();
@@ -73,6 +94,38 @@ public class WechatController {
             return ok;
         }
     }
+
+
+    @RequestMapping(value = "/interaction")
+    public String callback2(HttpServletRequest request, HttpServletResponse response) {
+        response.setCharacterEncoding("utf-8");
+
+        String originalXml = ThreadLocalHolder.getOriginalXml();
+        logger.debug("received message : {}", originalXml);
+
+        try {
+            HttpPost post = new HttpPost(accessUrl);
+            post.setEntity(new InputStreamEntity(request.getInputStream()));
+            CloseableHttpResponse responseEntity = null;
+
+            try {
+                responseEntity = client.execute(post);
+                HttpEntity entity = responseEntity.getEntity();
+                entity.writeTo(response.getOutputStream());
+                return null;
+            } finally {
+                if (responseEntity != null)
+                    responseEntity.close();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        logger.debug("receive message from robot : {}", response);
+        return "";
+    }
+
+
 
 
     private String dealWithMessage(WeChatMessage message) {

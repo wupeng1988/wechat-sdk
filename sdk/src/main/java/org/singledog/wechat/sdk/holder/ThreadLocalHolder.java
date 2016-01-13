@@ -1,5 +1,7 @@
 package org.singledog.wechat.sdk.holder;
 
+import java.io.InputStream;
+
 /**
  * @author wupeng
  * @version 1.0
@@ -10,6 +12,7 @@ package org.singledog.wechat.sdk.holder;
 public class ThreadLocalHolder {
 
     private static final ThreadLocal<String> originalXml = new ThreadLocal<>();
+    private static final ThreadLocal<InputStream> inputStream = new ThreadLocal<>();
 
     public static void setOriginalXml(String xml) {
         originalXml.set(xml);
@@ -17,6 +20,14 @@ public class ThreadLocalHolder {
 
     public static String getOriginalXml() {
         return originalXml.get();
+    }
+
+    public static void setInputStream(InputStream is) {
+        inputStream.set(is);
+    }
+
+    public static InputStream getInputStream() {
+        return inputStream.get();
     }
 
 }
