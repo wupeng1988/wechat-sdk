@@ -11,9 +11,10 @@ public class ReplyTextMessage extends AbstractMessage {
 
     private String Content;
 
-    public ReplyTextMessage(){}
+    public ReplyTextMessage() {
+    }
 
-    public ReplyTextMessage(WeChatMessage message){
+    public ReplyTextMessage(WeChatMessage message) {
         this.setFromUserName(message.getToUserName());
         this.setToUserName(message.getFromUserName());
         this.setMsgType(MessageTypes.text.name());

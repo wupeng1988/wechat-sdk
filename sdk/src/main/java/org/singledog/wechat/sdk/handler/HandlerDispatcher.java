@@ -13,19 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * Created by adam on 1/3/16.
  */
 @Component
 public class HandlerDispatcher {
 
-    private static final Logger logger = LoggerFactory.getLogger(HandlerDispatcher .class);
+    private static final Logger logger = LoggerFactory.getLogger(HandlerDispatcher.class);
 
     private final Map<Class<?>, MessageHandler<? extends WeChatMessage>> messageHandlerMap;
 
     @Autowired(required = false)
     public HandlerDispatcher(List<MessageHandler<? extends WeChatMessage>> messageHandlers) {
-       Map<Class<?>, MessageHandler<?>> map = new HashMap<>();
+        Map<Class<?>, MessageHandler<?>> map = new HashMap<>();
         for (MessageHandler handler : messageHandlers) {
             logger.debug("loading handler : {}", handler);
             map.put(handler.support(), handler);

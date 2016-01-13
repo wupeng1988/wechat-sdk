@@ -30,20 +30,20 @@ public class EventPublisher {
     private ExecutorService executorService;
 
     @Autowired
-    public EventPublisher(List<OpentspListener<?>> listenerList){
+    public EventPublisher(List<OpentspListener<?>> listenerList) {
         Map<Class<?>, List<OpentspListener<?>>> map = new HashMap<>();
 
-        for(OpentspListener listener : listenerList) {
+        for (OpentspListener listener : listenerList) {
             logger.debug("loading listener : {}", listener.getClass());
             Class clazz = null;
             //获取到泛型的事件类型
             Type[] interfaces = listener.getClass().getGenericInterfaces();
             Type superClasses = listener.getClass().getGenericSuperclass();
 
-            for(Type type : interfaces) {
-                if((type instanceof Class) && (OpentspListener.class.isAssignableFrom((Class<?>) type))) {
+            for (Type type : interfaces) {
+                if ((type instanceof Class) && (OpentspListener.class.isAssignableFrom((Class<?>) type))) {
                     clazz = (Class) type;
-                } else if((type instanceof ParameterizedType) && ((ParameterizedType) type).getRawType().getTypeName().equals(OpentspListener.class.getName())) {
+                } else if ((type instanceof ParameterizedType) && ((ParameterizedType) type).getRawType().getTypeName().equals(OpentspListener.class.getName())) {
                     type = ((ParameterizedType) type).getActualTypeArguments()[0];
                     clazz = (Class) type;
                 }
@@ -54,13 +54,13 @@ public class EventPublisher {
                 clazz = (Class) type;
             }
 
-            if(clazz == null) {
+            if (clazz == null) {
                 logger.error("error found event for listener : {}", listener.getClass());
                 continue;
             }
 
             List<OpentspListener<?>> list = map.get(clazz);
-            if(list == null) {
+            if (list == null) {
                 list = new LinkedList<>();
                 map.put(clazz, list);
             }
@@ -69,7 +69,7 @@ public class EventPublisher {
         }
 
         ListenerComparator comparator = new ListenerComparator();
-        for(Map.Entry<Class<?>, List<OpentspListener<?>>> entry : map.entrySet()) {
+        for (Map.Entry<Class<?>, List<OpentspListener<?>>> entry : map.entrySet()) {
             Collections.sort(entry.getValue(), comparator);
         }
 
@@ -78,6 +78,7 @@ public class EventPublisher {
 
     /**
      * 发布事件
+     *
      * @param opentspEvent
      */
     public void publishEvent(OpentspEvent<?> opentspEvent) {
@@ -85,13 +86,13 @@ public class EventPublisher {
         logger.debug("publish event : {}", clazz);
 
         List<OpentspListener<?>> opentspListeners = listeners.get(clazz);
-        if(opentspListeners == null || opentspListeners.size() == 0) {
+        if (opentspListeners == null || opentspListeners.size() == 0) {
             logger.warn("no listener found for event : {}", clazz);
             return;
         }
 
-        for(OpentspListener listener : opentspListeners) {
-            if(listener.async()) { // 异步的
+        for (OpentspListener listener : opentspListeners) {
+            if (listener.async()) { // 异步的
                 logger.debug("call async listener : {}", listener.getClass());
                 this.executorService.submit(new Runnable() {
                     @Override
@@ -114,10 +115,10 @@ public class EventPublisher {
             Assert.notNull(o1);
             Assert.notNull(o2);
 
-            if(o1 == o2)
+            if (o1 == o2)
                 return 0;
 
-            if(o1.equals(o2)) {
+            if (o1.equals(o2)) {
                 return 0;
             }
 

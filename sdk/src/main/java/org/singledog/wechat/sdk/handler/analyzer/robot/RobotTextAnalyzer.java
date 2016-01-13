@@ -4,27 +4,21 @@ import org.singledog.wechat.sdk.handler.analyzer.MessageAnalyzer;
 import org.singledog.wechat.sdk.message.MessageTypes;
 import org.singledog.wechat.sdk.message.TextMessage;
 import org.singledog.wechat.sdk.message.WeChatMessage;
-import org.singledog.wechat.sdk.message.component.MessageComponent;
 import org.singledog.wechat.sdk.message.reply.ReplyTextMessage;
 import org.singledog.wechat.sdk.util.HttpUtil;
 import org.singledog.wechat.sdk.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * this will be called last
- *
+ * <p/>
  * Created by adam on 16-1-4.
  */
 //@Component

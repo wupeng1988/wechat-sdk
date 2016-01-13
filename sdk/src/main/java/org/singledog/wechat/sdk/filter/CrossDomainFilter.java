@@ -45,10 +45,10 @@ public class CrossDomainFilter extends OpenTspFilterAdaptor {
 
         String origin = servletRequest.getHeader("Origin");//find origin header, allow cross domain
         logger.info("find Origin : {}", origin);
-        if(StringUtils.isEmpty(origin)) {// if no origin header
+        if (StringUtils.isEmpty(origin)) {// if no origin header
             origin = servletRequest.getHeader("Referer");//
             logger.info("find Referer : {}", origin);
-            if(StringUtils.isEmpty(origin)) {
+            if (StringUtils.isEmpty(origin)) {
                 origin = "*";
             } else {
 

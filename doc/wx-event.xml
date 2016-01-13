@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-接收普通文本消息
+        接收普通文本消息
 
- <xml>
- <ToUserName><![CDATA[toUser]]></ToUserName>
- <FromUserName><![CDATA[fromUser]]></FromUserName> 
- <CreateTime>1348831860</CreateTime>
- <MsgType><![CDATA[text]]></MsgType>
- <Content><![CDATA[this is a test]]></Content>
- <MsgId>1234567890123456</MsgId>
- </xml>
- 
- 
- 
- 接收 关注取消事件
- <xml>
+<xml>
+    <ToUserName><![CDATA[toUser]]></ToUserName>
+    <FromUserName><![CDATA[fromUser]]></FromUserName>
+    <CreateTime>1348831860</CreateTime>
+    <MsgType><![CDATA[text]]></MsgType>
+    <Content><![CDATA[this is a test]]></Content>
+    <MsgId>1234567890123456</MsgId>
+</xml>
+
+
+        接收 关注取消事件
+<xml>
 <ToUserName><![CDATA[toUser]]></ToUserName>
 <FromUserName><![CDATA[FromUser]]></FromUserName>
 <CreateTime>123456789</CreateTime>
 <MsgType><![CDATA[event]]></MsgType>
 <Event><![CDATA[subscribe]]></Event>
 </xml>
- 
- 
- 
-点击菜单拉取消息时的事件推送
- <xml>
+
+
+        点击菜单拉取消息时的事件推送
+<xml>
 <ToUserName><![CDATA[toUser]]></ToUserName>
 <FromUserName><![CDATA[FromUser]]></FromUserName>
 <CreateTime>123456789</CreateTime>
@@ -32,10 +30,10 @@
 <Event><![CDATA[CLICK]]></Event>
 <EventKey><![CDATA[EVENTKEY]]></EventKey>
 </xml>
- 
- 
- 点击菜单跳转链接时的事件推送
- <xml>
+
+
+        点击菜单跳转链接时的事件推送
+<xml>
 <ToUserName><![CDATA[toUser]]></ToUserName>
 <FromUserName><![CDATA[FromUser]]></FromUserName>
 <CreateTime>123456789</CreateTime>

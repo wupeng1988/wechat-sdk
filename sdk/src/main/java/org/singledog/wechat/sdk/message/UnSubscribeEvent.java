@@ -6,5 +6,4 @@ package org.singledog.wechat.sdk.message;
 public class UnSubscribeEvent extends AbstractEventMessage {
 
 
-
 }

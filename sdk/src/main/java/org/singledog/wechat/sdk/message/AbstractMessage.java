@@ -1,9 +1,8 @@
 package org.singledog.wechat.sdk.message;
 
 /**
- *
  * basic message information
- *
+ * <p/>
  * Created by adam on 15-12-31.
  */
 public abstract class AbstractMessage implements WeChatMessage {

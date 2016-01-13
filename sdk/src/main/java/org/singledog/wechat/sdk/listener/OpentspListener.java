@@ -14,6 +14,7 @@ public interface OpentspListener<T extends OpentspEvent<?>> extends Order {
 
     /**
      * true 表示异步， false表示同步
+     *
      * @return
      */
     public boolean async();

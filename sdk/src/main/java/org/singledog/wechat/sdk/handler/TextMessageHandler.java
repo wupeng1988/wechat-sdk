@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- *
  * Created by adam on 1/3/16.
  */
 @Component

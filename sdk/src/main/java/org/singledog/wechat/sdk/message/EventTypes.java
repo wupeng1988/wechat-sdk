@@ -1,9 +1,8 @@
 package org.singledog.wechat.sdk.message;
 
 /**
- *
  * @see http://mp.weixin.qq.com/wiki/7/9f89d962eba4c5924ed95b513ba69d9b.html
- *
+ * <p/>
  * Created by adam on 1/2/16.
  */
 public enum EventTypes {

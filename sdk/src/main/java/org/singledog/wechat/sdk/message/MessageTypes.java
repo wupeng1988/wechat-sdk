@@ -3,8 +3,8 @@ package org.singledog.wechat.sdk.message;
 
 /**
  * @see http://mp.weixin.qq.com/wiki/17/f298879f8fb29ab98b2f2971d42552fd.html
- *
- *
+ * <p/>
+ * <p/>
  * Created by adam on 1/2/16.
  */
 public enum MessageTypes {

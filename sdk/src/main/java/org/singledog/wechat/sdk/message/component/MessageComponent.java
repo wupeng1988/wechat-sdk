@@ -17,28 +17,28 @@ import java.util.Map;
 
 @Component
 public class MessageComponent {
-	
-	private static final Logger logger = LoggerFactory.getLogger(MessageComponent.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageComponent.class);
 
     @Autowired
     private AccessTokenComponent tokenComponent;
 
-	/**
-	 * 发送客服消息  -  文本消息
-	 */
-	public void sendCustomTextMessage(String toUserOpenId, String content){
-		try {
+    /**
+     * 发送客服消息  -  文本消息
+     */
+    public void sendCustomTextMessage(String toUserOpenId, String content) {
+        try {
             String token = tokenComponent.refreshToken().getAccess_token();
             String url = Interfaces.custom_send.toString() + "?access_token=" + token;
             String json = HttpUtil.post(url, this.customTextMessage(toUserOpenId, content));
-			ErrorCheckUtil.check(json);
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage(), e);
-		}
-	}
+            ErrorCheckUtil.check(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        }
+    }
 
-    public String customTextMessage(String toUserName, String content){
+    public String customTextMessage(String toUserName, String content) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("touser", toUserName);
         map.put("msgtype", "text");

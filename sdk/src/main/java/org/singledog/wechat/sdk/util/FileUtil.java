@@ -18,18 +18,18 @@ public class FileUtil {
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
     private static final Map<String, String> FILE_CONTENT_CACHE = new ConcurrentHashMap<>();
 
-    public static String replace(String json, Map<String, Object> variables){
-        for(Map.Entry<String, Object> entry : variables.entrySet()) {
+    public static String replace(String json, Map<String, Object> variables) {
+        for (Map.Entry<String, Object> entry : variables.entrySet()) {
             String key = entry.getKey();
             String value = (entry.getValue() == null ? "" : String.valueOf(entry.getValue()));
-            json = json.replace("${"+key+"}", value);
+            json = json.replace("${" + key + "}", value);
         }
 
         return json;
     }
 
     public static synchronized String readString(String name) throws FileNotFoundException {
-        if(FILE_CONTENT_CACHE.containsKey(name))
+        if (FILE_CONTENT_CACHE.containsKey(name))
             return FILE_CONTENT_CACHE.get(name);
 
         String json = null;
@@ -55,25 +55,25 @@ public class FileUtil {
             br = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
             String flag = null;
-            while((flag = br.readLine()) != null) {
+            while ((flag = br.readLine()) != null) {
                 sb.append(flag);
             }
             json = sb.toString();
 
-            logger.debug("read file : {} ,content : {}" , name, sb.toString());
+            logger.debug("read file : {} ,content : {}", name, sb.toString());
             FILE_CONTENT_CACHE.put(name, json);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         } finally {
             try {
-                if(is != null)
+                if (is != null)
                     is.close();
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
 
             try {
-                if(br != null)
+                if (br != null)
                     br.close();
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

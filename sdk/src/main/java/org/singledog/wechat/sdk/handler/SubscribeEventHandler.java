@@ -21,9 +21,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
- *
  * triggered when user subscribe this account
- *
+ * <p/>
  * Created by adam on 1/3/16.
  */
 @Component

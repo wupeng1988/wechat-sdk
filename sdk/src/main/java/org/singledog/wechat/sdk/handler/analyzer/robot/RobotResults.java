@@ -8,8 +8,7 @@ public enum RobotResults {
     text(100000, RobotTextResult.class),
     link(200000, RobotLinkResult.class),
     news(302000, RobotNewsResult.class),
-    dish(308000, RobotDishsResult.class)
-    ;
+    dish(308000, RobotDishsResult.class);
 
     private Class<?> clazz;
     private int code;

@@ -6,5 +6,4 @@ package org.singledog.wechat.sdk.handler.analyzer.robot;
 public class RobotTrainResult extends RobotLinkResult {
 
 
-
 }

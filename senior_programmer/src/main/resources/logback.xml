@@ -17,24 +17,24 @@
         </encoder>
     </appender>
     <logger name="org.singledog" level="DEBUG">
-    	<appender-ref ref="FILE"/>
+        <appender-ref ref="FILE"/>
     </logger>
     <logger name="org.springframework">
-    	<appender-ref ref="FILE"/> 
+        <appender-ref ref="FILE"/>
     </logger>
     <logger name="java.sql.Connection">
-    	<appender-ref ref="FILE"/> 
+        <appender-ref ref="FILE"/>
     </logger>
     <logger name="org.mybatis">
-    	<appender-ref ref="FILE"/> 
+        <appender-ref ref="FILE"/>
     </logger>
     <logger name="org.apache">
-    	<appender-ref ref="FILE"/> 
+        <appender-ref ref="FILE"/>
     </logger>
     <logger name="org.ibatis">
-    	<appender-ref ref="FILE"/> 
+        <appender-ref ref="FILE"/>
     </logger>
-    
+
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>

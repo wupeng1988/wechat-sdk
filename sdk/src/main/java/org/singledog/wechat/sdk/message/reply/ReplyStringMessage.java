@@ -1,6 +1,5 @@
 package org.singledog.wechat.sdk.message.reply;
 
-import org.singledog.wechat.sdk.message.AbstractMessage;
 import org.singledog.wechat.sdk.message.WeChatMessage;
 
 /**

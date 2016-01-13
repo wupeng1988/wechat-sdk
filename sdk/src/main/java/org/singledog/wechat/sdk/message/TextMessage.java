@@ -1,9 +1,8 @@
 package org.singledog.wechat.sdk.message;
 
 /**
- *
  * text message
- *
+ * <p/>
  * Created by adam on 15-12-31.
  */
 public class TextMessage extends AbstractMessage {

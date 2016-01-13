@@ -7,13 +7,11 @@ import org.singledog.wechat.sdk.util.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -37,9 +35,10 @@ public class AccessTokenComponent {
 
     /**
      * 重新获取access_token
+     *
      * @return
      */
-    public AccessToken refreshToken(){
+    public AccessToken refreshToken() {
         String key = cacheConfig.getCachePrefix() + ".accessToken";
         ValueOperations valueOperations = redisTemplate.opsForValue();
         AccessToken token = (AccessToken) valueOperations.get(key);
@@ -54,7 +53,7 @@ public class AccessTokenComponent {
 
         String json = restTemplate.getForObject(sb.toString(), String.class);//HttpUtil.get(url, param);
         Map<String, Object> map = JsonUtil.toMap(json);
-        if(map.containsKey("errcode")){
+        if (map.containsKey("errcode")) {
             throw new RuntimeException("server response message : " + json);
         } else {
             token = new AccessToken();

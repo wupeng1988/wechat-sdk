@@ -50,7 +50,6 @@ public class WechatController {
     @RequestMapping(value = "/interaction")
     public String callback(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("utf-8");
-
         Map<String, String[]> map = request.getParameterMap();
         if (map.containsKey("signature") && map.containsKey("timestamp") && map.containsKey("nonce") && map.containsKey("echostr")) {
             logger.debug("check auth ...");
@@ -63,7 +62,7 @@ public class WechatController {
                 return ok;
             }
 
-            ThreadLocalHolder.setOriginalXml(xml);
+            ThreadLocalHolder.setOriginalXml(new String(xml.getBytes(request.getCharacterEncoding()), "UTF-8"));
             logger.debug("recieved xml : {}", xml);
             Map<String, String> xmlMap = XmlUtil2.toMap(xml);
             WeChatMessage message = messageFactory.getMessage(xmlMap);
@@ -88,7 +87,7 @@ public class WechatController {
                 MessageEntity resultEntity = null;
                 if (result != null) {
                     msg = result.toXml();
-                    if (StringUtils.isEmpty(msg)) {
+                    if (msg == null) {
                         msg = XmlUtil2.beanToXml(result);
                     }
                     resultEntity = new MessageEntity(result);

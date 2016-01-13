@@ -1,9 +1,8 @@
 package org.singledog.wechat.sdk.message;
 
 /**
- *
  * Message
- *
+ * <p/>
  * Created by adam on 15-12-31.
  */
 public interface WeChatMessage {

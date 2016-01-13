@@ -9,9 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- *
  * configuration
- *
+ * <p/>
  * Created by adam on 1/3/16.
  */
 @Configuration
